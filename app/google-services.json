@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "301347645625",
+    "firebase_url": "https://elecsat-2019.firebaseio.com",
+    "project_id": "elecsat-2019",
+    "storage_bucket": "elecsat-2019.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301347645625:android:810bbf856dbedbcf",
+        "android_client_info": {
+          "package_name": "com.software.mycax.eat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "301347645625-grl72q19mbijj5ejmm0es65t60b1f8vt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYMLwfuQH2ZTvXxHNf8aD_JwNKIsCvJy0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
