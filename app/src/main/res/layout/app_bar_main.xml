@@ -17,6 +17,7 @@
             android:fitsSystemWindows="true"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:layout_gravity="center_horizontal"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>

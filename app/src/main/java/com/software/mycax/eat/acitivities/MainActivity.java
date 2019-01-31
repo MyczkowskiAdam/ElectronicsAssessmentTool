@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,13 +31,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.Menu;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -56,6 +56,15 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        if (mAuth.getCurrentUser() != null) {
+            // if user is signed in, add their info into navigation header
+            View hView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+            TextView textViewName = hView.findViewById(R.id.textViewName);
+            TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
+            textViewName.setText(mAuth.getCurrentUser().getDisplayName());
+            textViewEmail.setText(mAuth.getCurrentUser().getEmail());
+        }
+        moveFragment(new DashboardFragment());
     }
 
     @Override
@@ -74,31 +83,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_dashboard:
@@ -121,16 +106,17 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
                 break;
-            case R.id.nav_share:
-                break;
-            case R.id.nav_send:
-                break;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    /**
+     * method is used for moving to another fragment.
+     *
+     * @param fragment * target fragment to replace *
+     */
     private void moveFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, fragment).commit();

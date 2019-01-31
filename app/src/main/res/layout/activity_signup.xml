@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".acitivities.SignupAcitivity">
+    tools:context=".acitivities.SignupActivity">
 
     <LinearLayout
         android:id="@+id/container"
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:hint="Email address">
+            android:hint="@string/prompt_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email_edit_text"
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:hint="Temporary password">
+            android:hint="@string/prompt_password">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_edit_text"
@@ -56,13 +56,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:hint="Name">
+            android:hint="@string/prompt_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName|textCapWords" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,12 +71,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:hint="School code">
+            android:hint="@string/prompt_school_code">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/school_code_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,12 +86,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:hint="Teacher code">
+            android:hint="@string/prompt_teacher_code">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/teacher_code_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,7 +104,7 @@
         android:layout_height="wrap_content"
         android:padding="6dp"
         android:layout_marginTop="24dp"
-        android:text="User type:"
+        android:text="@string/label_user_type"
         app:layout_constraintEnd_toStartOf="@+id/account_type_spinner"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -130,12 +132,12 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/account_type_spinner"
         app:layout_constraintTop_toBottomOf="@+id/container"
-        fancy:fb_borderColor="#FFFFFF"
+        fancy:fb_borderColor="@android:color/white"
         fancy:fb_borderWidth="1dp"
         fancy:fb_defaultColor="@color/colorPrimary"
         fancy:fb_focusColor="@color/colorPrimaryDark"
         fancy:fb_radius="30dp"
-        fancy:fb_text="Create"
-        fancy:fb_textColor="#FFFFFF" />
+        fancy:fb_text="@string/action_create_account"
+        fancy:fb_textColor="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

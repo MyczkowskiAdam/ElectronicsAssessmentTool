@@ -12,10 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".acitivities.SignupAcitivity"/>
+        tools:ignore="GoogleAppIndexingWarning"
+        android:fullBackupContent="@xml/backup_descriptor">
+        <activity
+            android:name=".acitivities.SignupActivity"
+            android:label="@string/action_sign_up"
+            android:parentActivityName="com.software.mycax.eat.acitivities.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".acitivities.MainActivity" />
+        </activity>
         <activity
             android:name=".acitivities.LoginActivity"
+            android:label="@string/action_sign_in"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

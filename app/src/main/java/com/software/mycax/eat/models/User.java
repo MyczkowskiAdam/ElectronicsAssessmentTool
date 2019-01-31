@@ -1,5 +1,6 @@
 package com.software.mycax.eat.models;
 
+@SuppressWarnings("WeakerAccess")
 public class User {
     public String name, email, schoolCode, teacherCode;
     public int accountType;
