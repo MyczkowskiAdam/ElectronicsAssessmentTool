@@ -11,8 +11,11 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Sign up</string>
     <string name="welcome">"Welcome!"</string>
-    <string name="invalid_details">Fields cannot be empty, make sure email and password are valid and at least 6 characters!</string>
+    <string name="invalid_empty">Fields cannot be empty!</string>
     <string name="invalid_email">Email is not valid!</string>
+    <string name="invalid_password">Password is not valid!</string>
+    <string name="invalid_password_length">Password has to be at least 6 characters!</string>
+    <string name="invalid_spinner">No account type selected!</string>
     <string name="authentication_failed">"Authentication failed"</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

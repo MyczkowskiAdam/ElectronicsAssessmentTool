@@ -21,8 +21,6 @@ import com.software.mycax.eat.Utils;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
-
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
@@ -59,12 +57,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // Sign in success, move to main activity
-                                    Log.d(TAG, "signInWithEmail:success");
+                                    Log.d(Utils.getTag(), "signInWithEmail:success");
                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                     finish();
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    Log.w(Utils.getTag(), "signInWithEmail:failure", task.getException());
                                     Toast.makeText(LoginActivity.this, R.string.authentication_failed, Toast.LENGTH_SHORT).show();
                                 }
                             }

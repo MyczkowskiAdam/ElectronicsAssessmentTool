@@ -16,6 +16,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,8 +31,6 @@ import com.software.mycax.eat.models.User;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
-
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText eEmail, ePassword, eName, eSchoolCode, eTeacherCode;
     private FirebaseAuth mAuth;
@@ -38,8 +38,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,32 +62,49 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v.getId() == R.id.create_user_button) {
             // Check if for empty fields, validate email and password
-            if (!TextUtils.isEmpty(eTeacherCode.getText()) && !TextUtils.isEmpty(ePassword.getText()) && !TextUtils.isEmpty(eName.getText())
-                    && !TextUtils.isEmpty(eSchoolCode.getText()) && Utils.isEmailValid(eEmail.getText().toString()) && eEmail.getText().toString().length() < 6
-                    && Utils.isValidPassword(eEmail.getText().toString()) && accountTypeSpinner.getSelectedItem() != null) {
+            if (isInputValid()) {
                 mAuth.createUserWithEmailAndPassword(eEmail.getText().toString(), ePassword.getText().toString())
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // Sign in success, create a new user account
-                                    Log.d(TAG, "createUserWithEmail:success");
+                                    Log.d(Utils.getTag(), "createUserWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    assert user != null;
                                     createNewUser(user);
-                                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                                    finish();
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                    Log.w(Utils.getTag(), "createUserWithEmail:failure", task.getException());
                                     Toast.makeText(SignupActivity.this, R.string.authentication_failed, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
-            } else {
-                Toast.makeText(SignupActivity.this, R.string.invalid_details, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean isInputValid() {
+        if (TextUtils.isEmpty(eTeacherCode.getText()) || TextUtils.isEmpty(ePassword.getText()) || TextUtils.isEmpty(eName.getText()) || TextUtils.isEmpty(eSchoolCode.getText())) {
+            Toast.makeText(SignupActivity.this, R.string.invalid_empty, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!Utils.isEmailValid(eEmail.getText().toString())) {
+            Toast.makeText(SignupActivity.this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (ePassword.getText().toString().length() < 6) {
+            Toast.makeText(SignupActivity.this, R.string.invalid_password_length, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        /*if (!Utils.isValidPassword(ePassword.getText().toString())) {
+            Toast.makeText(SignupActivity.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+            return false;
+        }*/
+        if (accountTypeSpinner.getSelectedItem() == null) {
+            Toast.makeText(SignupActivity.this, R.string.invalid_spinner, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -104,13 +121,36 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
      *
      * @param firebaseUser * firebase user instance *
      */
-    private void createNewUser(FirebaseUser firebaseUser) {
+    private void createNewUser(final FirebaseUser firebaseUser) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         User newUser = new User(eName.getText().toString(), eEmail.getText().toString(), eSchoolCode.getText().toString(),
-                eTeacherCode.getText().toString(), accountTypeSpinner.getSelectedItemPosition());
+                eTeacherCode.getText().toString(), accountTypeSpinner.getSelectedItemPosition(),
+                eTeacherCode.getText().toString() + "_" + accountTypeSpinner.getSelectedItemPosition());
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(eName.getText().toString()).build();
         firebaseUser.updateProfile(profileUpdates);
-        mDatabase.child("users").child(firebaseUser.getUid()).setValue(newUser);
+        mDatabase.child("users").child(firebaseUser.getUid()).setValue(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(Utils.getTag(), "createUserDatabaseEntry:success");
+                startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(Utils.getTag(), "createUserDatabaseEntry:failure; deleting user", e.getCause());
+                firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(Utils.getTag(), "deleteUser:success");
+                        } else {
+                            Log.w(Utils.getTag(),"deleteUser:failure", task.getException());
+                        }
+                    }
+                });
+            }
+        });
     }
 }

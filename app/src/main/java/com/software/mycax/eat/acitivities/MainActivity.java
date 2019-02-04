@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -16,28 +17,41 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.software.mycax.eat.R;
+import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.fragment.AnalyticsFragment;
 import com.software.mycax.eat.fragment.DashboardFragment;
 import com.software.mycax.eat.fragment.ManageStudentsFragment;
 import com.software.mycax.eat.fragment.SettingsFragment;
 import com.software.mycax.eat.fragment.TestCreatorFragment;
+import com.software.mycax.eat.models.User;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private FirebaseAuth mAuth;
+    private User mUser;
+    private DatabaseReference mDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,6 +63,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -63,13 +78,33 @@ public class MainActivity extends AppCompatActivity
             TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
             textViewName.setText(mAuth.getCurrentUser().getDisplayName());
             textViewEmail.setText(mAuth.getCurrentUser().getEmail());
+            getUser(navigationView);
         }
         moveFragment(new DashboardFragment());
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private void getUser(final NavigationView navigationView) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUser = dataSnapshot.getValue(User.class);
+                Log.d(Utils.getTag(), "onDataChange: read value success");
+                if (mUser.getAccountType() == Utils.ACCOUNT_TEACHER) {
+                    navigationView.getMenu().clear();
+                    navigationView.inflateMenu(R.menu.activity_teacher_drawer);
+                } else if (mUser.getAccountType() == Utils.ACCOUNT_STUDENT) {
+                    navigationView.getMenu().clear();
+                    navigationView.inflateMenu(R.menu.activity_student_drawer);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Failed to read value
+                Log.e(Utils.getTag(), "onCancelled: failed to read value", error.toException());
+            }
+        });
     }
 
     @Override
