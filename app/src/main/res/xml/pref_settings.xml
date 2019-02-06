@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="User Settings">
-        <Preference android:key="reset_password"
-            android:title="Reset password"
-            android:summary=" reset password"/>
+        <Preference
+            android:key="pref_profile_update"
+            android:title="@string/pref_profile_update_title"
+            android:summary="@string/pref_profile_update_summary"/>
+        <EditTextPreference
+            android:key="testedit"
+            android:title="test edit"
+            android:summary="edit test"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>

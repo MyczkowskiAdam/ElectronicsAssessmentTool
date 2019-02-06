@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
 public class Utils {
     public static final int ACCOUNT_STUDENT = 0;
     public static final int ACCOUNT_TEACHER = 1;
+    public static final int GALLERY_INTENT = 1;
+    public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
+    public static final String PREF_PROFILE_UPDATE = "pref_profile_update";
     /**
      * method is used for checking valid email id format.
      *
@@ -13,7 +16,7 @@ public class Utils {
      * @return boolean true for valid false for invalid
      */
     public static boolean isEmailValid(final String email) {
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        String expression = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();

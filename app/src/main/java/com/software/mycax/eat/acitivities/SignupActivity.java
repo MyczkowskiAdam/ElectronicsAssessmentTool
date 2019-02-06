@@ -71,7 +71,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                                     // Sign in success, create a new user account
                                     Log.d(Utils.getTag(), "createUserWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    createNewUser(user);
+                                    if (user != null) createNewUser(user);
+                                    Log.w(Utils.getTag(), "createUserWithEmail: user is null");
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(Utils.getTag(), "createUserWithEmail:failure", task.getException());

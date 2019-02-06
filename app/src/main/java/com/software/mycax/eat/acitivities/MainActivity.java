@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -17,10 +18,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,16 +43,18 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private FirebaseAuth mAuth;
     private User mUser;
-    private DatabaseReference mDatabase;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mFirebaseUser = mAuth.getCurrentUser();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,20 +74,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-        if (mAuth.getCurrentUser() != null) {
+        if (mFirebaseUser != null) {
             // if user is signed in, add their info into navigation header
             View hView = navigationView.inflateHeaderView(R.layout.nav_header_main);
             TextView textViewName = hView.findViewById(R.id.textViewName);
             TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
-            textViewName.setText(mAuth.getCurrentUser().getDisplayName());
-            textViewEmail.setText(mAuth.getCurrentUser().getEmail());
+            CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
+            textViewName.setText(mFirebaseUser.getDisplayName());
+            textViewEmail.setText(mFirebaseUser.getEmail());
+            if (mFirebaseUser.getPhotoUrl() != null) Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
             getUser(navigationView);
         }
         moveFragment(new DashboardFragment());
     }
 
     private void getUser(final NavigationView navigationView) {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
