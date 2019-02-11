@@ -14,7 +14,7 @@
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_empty">Fields cannot be empty!</string>
     <string name="invalid_email">Email is not valid!</string>
-    <string name="invalid_password_length">Password has to be at least 6 characters!</string>
+    <string name="invalid_password_length">Password has to be at least 8 characters!</string>
     <string name="invalid_spinner">No account type selected!</string>
     <string name="authentication_failed">"Authentication failed"</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

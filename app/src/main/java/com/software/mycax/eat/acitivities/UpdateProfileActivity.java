@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -97,14 +98,14 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.imageViewProfilePic) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, Utils.PERMISSION_READ_EXTERNAL_STORAGE);
@@ -125,7 +126,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(Utils.getTag(), "profileUpdate:success");
-                                Toast.makeText(UpdateProfileActivity.this, R.string.update_profile, Toast.LENGTH_SHORT).show();
+                                Snackbar.make(v, R.string.update_profile, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -138,14 +139,13 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(Utils.getTag(), "createUserDatabaseEntry:success");
-                    Toast.makeText(UpdateProfileActivity.this, R.string.update_success, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, R.string.update_success, Snackbar.LENGTH_LONG).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.w(Utils.getTag(), "createUserDatabaseEntry:failure; deleting user", e.getCause());
-                    Toast.makeText(UpdateProfileActivity.this, R.string.update_failure, Toast.LENGTH_SHORT).show();
-
+                    Snackbar.make(v, R.string.update_failure, Snackbar.LENGTH_LONG).show();
                 }
             });
         }

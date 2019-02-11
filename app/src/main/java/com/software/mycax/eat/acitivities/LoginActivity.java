@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.software.mycax.eat.R;
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.loginButton) {
             if (!TextUtils.isEmpty(eEmail.getText()) && !TextUtils.isEmpty(ePassword.getText()) && Utils.isEmailValid(eEmail.getText().toString())) {
                 mAuth.signInWithEmailAndPassword(eEmail.getText().toString(), ePassword.getText().toString())
@@ -64,11 +65,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     // If sign in fails, display a message to the user.
                                     Log.w(Utils.getTag(), "signInWithEmail:failure", task.getException());
                                     Toast.makeText(LoginActivity.this, R.string.authentication_failed, Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(v, R.string.authentication_failed, Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         });
             } else {
-                Toast.makeText(LoginActivity.this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
+                Snackbar.make(v, R.string.invalid_email, Snackbar.LENGTH_LONG).show();
             }
         } else if (v.getId() == R.id.signupButton) {
             startActivity(new Intent(this, SignupActivity.class));

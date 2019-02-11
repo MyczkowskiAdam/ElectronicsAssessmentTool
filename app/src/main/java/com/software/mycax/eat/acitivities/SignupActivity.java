@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,10 +60,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.create_user_button) {
             // Check if for empty fields, validate email and password
-            if (isInputValid()) {
+            if (isInputValid(v)) {
                 mAuth.createUserWithEmailAndPassword(eEmail.getText().toString(), ePassword.getText().toString())
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -76,7 +77,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(Utils.getTag(), "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignupActivity.this, R.string.authentication_failed, Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(v, R.string.authentication_failed, Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -84,25 +85,26 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private boolean isInputValid() {
+    private boolean isInputValid(View v) {
         if (TextUtils.isEmpty(eTeacherCode.getText()) || TextUtils.isEmpty(ePassword.getText()) || TextUtils.isEmpty(eName.getText()) || TextUtils.isEmpty(eSchoolCode.getText())) {
-            Toast.makeText(SignupActivity.this, R.string.invalid_empty, Toast.LENGTH_SHORT).show();
+            Snackbar.make(v, R.string.invalid_empty, Snackbar.LENGTH_LONG).show();
             return false;
         }
         if (!Utils.isEmailValid(eEmail.getText().toString())) {
-            Toast.makeText(SignupActivity.this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
+            Snackbar.make(v, R.string.invalid_email, Snackbar.LENGTH_LONG).show();
             return false;
         }
-        if (ePassword.getText().toString().length() < 6) {
-            Toast.makeText(SignupActivity.this, R.string.invalid_password_length, Toast.LENGTH_SHORT).show();
+        if (ePassword.getText().toString().length() < 8) {
+            Snackbar.make(v, R.string.invalid_password_length, Snackbar.LENGTH_LONG).show();
             return false;
         }
-        /*if (!Utils.isValidPassword(ePassword.getText().toString())) {
-            Toast.makeText(SignupActivity.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+        /* Uncomment to enable password rule enforcement
+        if (!Utils.isPasswordValid(ePassword.getText().toString())) {
+            Snackbar.make(v, R.string.invalid_password, Snackbar.LENGTH_LONG).show();
             return false;
         }*/
         if (accountTypeSpinner.getSelectedItem() == null) {
-            Toast.makeText(SignupActivity.this, R.string.invalid_spinner, Toast.LENGTH_SHORT).show();
+            Snackbar.make(v, R.string.invalid_spinner, Snackbar.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -111,7 +113,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

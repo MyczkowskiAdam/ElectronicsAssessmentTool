@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 
@@ -37,5 +38,4 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         }
         return false;
     }
-
 }

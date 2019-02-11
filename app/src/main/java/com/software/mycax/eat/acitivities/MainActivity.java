@@ -47,14 +47,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private FirebaseAuth mAuth;
+    private FirebaseUser mFirebaseUser;
     private User mUser;
+    private NavigationView navigationView;
+    private View hView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser mFirebaseUser = mAuth.getCurrentUser();
+        mFirebaseUser = mAuth.getCurrentUser();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -76,19 +79,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         if (mFirebaseUser != null) {
             // if user is signed in, add their info into navigation header
-            View hView = navigationView.inflateHeaderView(R.layout.nav_header_main);
-            TextView textViewName = hView.findViewById(R.id.textViewName);
-            TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
-            CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
-            textViewName.setText(mFirebaseUser.getDisplayName());
-            textViewEmail.setText(mFirebaseUser.getEmail());
-            if (mFirebaseUser.getPhotoUrl() != null) Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
-            getUser(navigationView);
+            hView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+            getUser();
         }
         moveFragment(new DashboardFragment());
     }
 
-    private void getUser(final NavigationView navigationView) {
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (hView != null) {
+            updateDrawer();
+            Log.d(Utils.getTag(), "onResume: updating drawer");
+        } else Log.d(Utils.getTag(), "onResume: hView is null!");
+    }
+
+    private void updateDrawer() {
+        TextView textViewName = hView.findViewById(R.id.textViewName);
+        TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
+        CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
+        textViewName.setText(mFirebaseUser.getDisplayName());
+        textViewEmail.setText(mFirebaseUser.getEmail());
+        if (mFirebaseUser.getPhotoUrl() != null) Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
+    }
+
+    private void getUser() {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
