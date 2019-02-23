@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,16 +33,15 @@ import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.models.User;
 
-import java.util.Objects;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class UpdateProfileActivity extends AppCompatActivity implements View.OnClickListener {
-    private FirebaseAuth mAuth;
     private FirebaseUser mFirebaseUser;
     private User mUser;
-    private EditText eName, eSchoolCode, eTeacherCode;
+    private EditText eName;
+    private EditText eSchoolCode;
+    private EditText eTeacherCode;
     private AppCompatTextView tAccountLabel;
     private CircleImageView iProfilePic;
     private int accountType;
@@ -56,11 +53,11 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_update_profile);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mAuth.getCurrentUser();
-        eTeacherCode = findViewById(R.id.teacher_code_edit_text);
         eName = findViewById(R.id.name_edit_text);
         eSchoolCode = findViewById(R.id.school_code_edit_text);
+        eTeacherCode = findViewById(R.id.teacher_code_edit_text);
         tAccountLabel = findViewById(R.id.textViewAccountLabel);
         iProfilePic = findViewById(R.id.imageViewProfilePic);
         FancyButton bUpdateProfile = findViewById(R.id.update_user_button);
@@ -72,9 +69,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    /**
+     * method is used to retrieve data from Firebase database
+     */
     private void setUserData() {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUser = dataSnapshot.getValue(User.class);
@@ -97,6 +97,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // on back pressed navigate to previous activity
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -107,6 +108,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(final View v) {
         if (v.getId() == R.id.imageViewProfilePic) {
+            // To pick a new profile picture we need READ_EXTERNAL_STORAGE permission
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, Utils.PERMISSION_READ_EXTERNAL_STORAGE);
             else {
@@ -114,27 +116,32 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
             }
         }
         if (v.getId() == R.id.update_user_button)  {
+            // Add new picture to profile builder
             UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
             if (mUri != null) {
                 builder.setPhotoUri(mUri);
             }
             builder.setDisplayName(eName.getText().toString());
             UserProfileChangeRequest profileUpdates = builder.build();
-            mFirebaseUser.updateProfile(profileUpdates)
+            mFirebaseUser.updateProfile(profileUpdates) // Upload changes to Firebase
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(Utils.getTag(), "profileUpdate:success");
                                 Snackbar.make(v, R.string.update_profile, Snackbar.LENGTH_LONG).show();
+                            } else {
+                                Log.w(Utils.getTag(), "profileUpdate:failure");
+                                Snackbar.make(v, R.string.update_profile_failure, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
 
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            User updateUser = new User(eName.getText().toString(), mFirebaseUser.getEmail(), eSchoolCode.getText().toString(),
+            User updateUser = new User(mFirebaseUser.getUid(), eName.getText().toString(), mFirebaseUser.getEmail(), eSchoolCode.getText().toString(),
                     eTeacherCode.getText().toString(), accountType,
                     eTeacherCode.getText().toString() + "_" + accountType);
+            // Upload changes to Firebase database
             mDatabase.child("users").child(mFirebaseUser.getUid()).setValue(updateUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -156,6 +163,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Utils.PERMISSION_READ_EXTERNAL_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // check if permission is granted
                 pickImage();
             }
         }
@@ -164,11 +172,15 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Utils.GALLERY_INTENT && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // Load new profile picture into ImageView
             mUri = data.getData();
             Glide.with(this).load(data.getData()).into(iProfilePic);
         }
     }
 
+    /**
+     * method is used to start picker activity
+     */
     private void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, Utils.GALLERY_INTENT);

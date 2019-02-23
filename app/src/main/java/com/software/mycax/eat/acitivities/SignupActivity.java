@@ -2,7 +2,6 @@ package com.software.mycax.eat.acitivities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,7 +31,11 @@ import com.software.mycax.eat.models.User;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
-    private EditText eEmail, ePassword, eName, eSchoolCode, eTeacherCode;
+    private EditText eEmail;
+    private EditText ePassword;
+    private EditText eName;
+    private EditText eSchoolCode;
+    private EditText eTeacherCode;
     private FirebaseAuth mAuth;
     private Spinner accountTypeSpinner;
 
@@ -44,16 +46,16 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_signup);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        eTeacherCode = findViewById(R.id.teacher_code_edit_text);
         eEmail = findViewById(R.id.email_edit_text);
         ePassword = findViewById(R.id.password_edit_text);
         eName = findViewById(R.id.name_edit_text);
         eSchoolCode = findViewById(R.id.school_code_edit_text);
+        eTeacherCode = findViewById(R.id.teacher_code_edit_text);
         accountTypeSpinner = findViewById(R.id.account_type_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.account_types, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        accountTypeSpinner.setAdapter(adapter);
+        accountTypeSpinner.setAdapter(adapter); // set spinner data
         FancyButton createUserButton = findViewById(R.id.create_user_button);
         createUserButton.setOnClickListener(this);
 
@@ -85,6 +87,12 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * method is used to validate fields
+     *
+     * @param v * View to display snackbar in *
+     * @return boolean true for valid false for invalid
+     */
     private boolean isInputValid(View v) {
         if (TextUtils.isEmpty(eTeacherCode.getText()) || TextUtils.isEmpty(ePassword.getText()) || TextUtils.isEmpty(eName.getText()) || TextUtils.isEmpty(eSchoolCode.getText())) {
             Snackbar.make(v, R.string.invalid_empty, Snackbar.LENGTH_LONG).show();
@@ -126,13 +134,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
      */
     private void createNewUser(final FirebaseUser firebaseUser) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        User newUser = new User(eName.getText().toString(), eEmail.getText().toString(), eSchoolCode.getText().toString(),
+        User newUser = new User(firebaseUser.getUid(), eName.getText().toString(), eEmail.getText().toString(), eSchoolCode.getText().toString(),
                 eTeacherCode.getText().toString(), accountTypeSpinner.getSelectedItemPosition(),
-                eTeacherCode.getText().toString() + "_" + accountTypeSpinner.getSelectedItemPosition());
+                eTeacherCode.getText().toString() + "_" + accountTypeSpinner.getSelectedItemPosition()); // Create new user
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(eName.getText().toString()).build();
-        firebaseUser.updateProfile(profileUpdates);
+        firebaseUser.updateProfile(profileUpdates); // Upload profile changes to Firebase
         mDatabase.child("users").child(firebaseUser.getUid()).setValue(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+            // Upload new user's data to Firebase database
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(Utils.getTag(), "createUserDatabaseEntry:success");

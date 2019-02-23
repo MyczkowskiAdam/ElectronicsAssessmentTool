@@ -25,7 +25,8 @@ import mehdi.sakout.fancybuttons.FancyButton;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
-    private EditText eEmail, ePassword;
+    private EditText eEmail;
+    private EditText ePassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +38,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             finish();
         }
         setContentView(R.layout.activity_login);
+        eEmail = findViewById(R.id.email_edit_text);
+        ePassword= findViewById(R.id.password_edit_text);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        eEmail = findViewById(R.id.email_edit_text);
-        ePassword = findViewById(R.id.password_edit_text);
         FancyButton bLogin = findViewById(R.id.loginButton);
         bLogin.setOnClickListener(this);
         FancyButton bSignup = findViewById(R.id.signupButton);

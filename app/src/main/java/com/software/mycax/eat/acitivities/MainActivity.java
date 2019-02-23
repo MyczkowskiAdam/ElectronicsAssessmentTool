@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
 import android.view.View;
@@ -61,17 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -94,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else Log.d(Utils.getTag(), "onResume: hView is null!");
     }
 
+    /**
+     * method is used set navigation drawer user data
+     */
     private void updateDrawer() {
         TextView textViewName = hView.findViewById(R.id.textViewName);
         TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
@@ -103,6 +95,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mFirebaseUser.getPhotoUrl() != null) Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
     }
 
+    /**
+     * method is used to inflate different navigation drawer
+     * menus based on the account type
+     */
     private void getUser() {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {

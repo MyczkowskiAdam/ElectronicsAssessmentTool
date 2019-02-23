@@ -4,6 +4,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public final class User {
+    private String userUid;
     private String name;
     private String email;
     private String schoolCode;
@@ -15,13 +16,22 @@ public final class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String name, String email, String schoolCode, String teacherCode, int accountType, String accountKey) {
+    public User(String userUid, String name, String email, String schoolCode, String teacherCode, int accountType, String accountKey) {
+        this.userUid = userUid;
         this.email = email;
         this.name = name;
         this.schoolCode = schoolCode;
         this.teacherCode = teacherCode;
         this.accountType = accountType;
         this.accountKey = accountKey;
+    }
+
+    public String getUserUid() {
+        return userUid;
+    }
+
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
     }
 
     public String getName() {

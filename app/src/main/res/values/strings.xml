@@ -11,6 +11,7 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Sign up</string>
     <string name="action_update_profile">Update profile</string>
+    <string name="action_reset_password">Reset password</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_empty">Fields cannot be empty!</string>
     <string name="invalid_email">Email is not valid!</string>
@@ -23,6 +24,7 @@
     <string name="update_success">Account updated successfully!</string>
     <string name="update_failure">Account update failed!</string>
     <string name="update_profile">Picture uploaded successfully!</string>
+    <string name="update_profile_failure">Picture upload unsuccessful</string>
     <string name="pref_profile_update_title">Update profile</string>
     <string name="pref_profile_update_summary">Change account info</string>
 

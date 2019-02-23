@@ -9,6 +9,7 @@ public class Utils {
     public static final int GALLERY_INTENT = 1;
     public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     public static final String PREF_PROFILE_UPDATE = "pref_profile_update";
+
     /**
      * method is used for checking valid email id format.
      *
