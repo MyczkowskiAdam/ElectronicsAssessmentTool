@@ -77,7 +77,7 @@ public class ManageStudentsFragment extends Fragment {
     private void getStudents(String teacherCode) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         String accountKey = teacherCode + "_0";
-        mDatabase.child("users").orderByChild("accountKey").equalTo(accountKey).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").orderByChild("accountKey").equalTo(accountKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //create a list of ManageStudent items

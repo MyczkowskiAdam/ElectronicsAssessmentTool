@@ -27,6 +27,7 @@
     <string name="update_profile_failure">Picture upload unsuccessful</string>
     <string name="pref_profile_update_title">Update profile</string>
     <string name="pref_profile_update_summary">Change account info</string>
+    <string name="text_reset_password">Are you sure you want to send password reset email to %1$s?</string>
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_testcreator">Test creator</string>

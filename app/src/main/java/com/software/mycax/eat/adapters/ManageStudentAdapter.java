@@ -1,6 +1,8 @@
 package com.software.mycax.eat.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,17 +47,28 @@ public class ManageStudentAdapter extends RecyclerView.Adapter<ManageStudentAdap
         public void onClick(View v) {
             //handle password reset button click
             if (v.getId() == R.id.reset_password_btn) {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email.getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle(R.string.action_reset_password)
+                        .setMessage(v.getContext().getResources().getString(R.string.text_reset_password, email.getText().toString()))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(Utils.getTag(), "Reset email sent.");
-                                } else {
-                                    Log.w(Utils.getTag(), "Reset email not sent");
-                                }
+                            public void onClick(DialogInterface dialog, int which) {
+                                FirebaseAuth.getInstance().sendPasswordResetEmail(email.getText().toString())
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(Utils.getTag(), "Reset email sent.");
+                                                } else {
+                                                    Log.w(Utils.getTag(), "Reset email not sent");
+                                                }
+                                            }
+                                        });
                             }
-                        });
+
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
             }
         }
     }
