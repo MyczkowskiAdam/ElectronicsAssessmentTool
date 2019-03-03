@@ -1,5 +1,14 @@
 package com.software.mycax.eat;
 
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+
+import androidx.annotation.Nullable;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +16,11 @@ public class Utils {
     public static final int ACCOUNT_STUDENT = 0;
     public static final int ACCOUNT_TEACHER = 1;
     public static final int GALLERY_INTENT = 1;
+    public static final int ONE_QUESTION = 0;
+    public static final int TWO_QUESTION = 1;
+    public static final int THREE_QUESTION = 2;
+    public static final int FOUR_QUESTION = 3;
+    public static final int FIVE_QUESTION = 4;
     public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     public static final String PREF_PROFILE_UPDATE = "pref_profile_update";
 
@@ -63,5 +77,23 @@ public class Utils {
             }
         }
         return tag;
+    }
+
+    public static boolean isTestInputValid(View view, int questionCount, List<EditText> inputAnswerList, @Nullable List<EditText> inputQuestionList, @Nullable EditText eTestTtle) {
+        if (eTestTtle != null && TextUtils.isEmpty(eTestTtle.getText())) {
+            Snackbar.make(view, R.string.invalid_empty, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+        for (int i = 0; i < questionCount; i++) {
+            if (inputQuestionList != null && TextUtils.isEmpty(inputQuestionList.get(i).getText())) {
+                Snackbar.make(view, R.string.invalid_empty, Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+            if (TextUtils.isEmpty(inputAnswerList.get(i).getText())) {
+                Snackbar.make(view, R.string.invalid_empty, Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        return true;
     }
 }

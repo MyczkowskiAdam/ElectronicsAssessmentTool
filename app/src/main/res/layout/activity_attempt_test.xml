@@ -25,45 +25,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_test_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_test_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/test_title_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:textSize="20sp"/>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView_num_of_q"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/prompt_num_of_q"
-            app:layout_constraintEnd_toStartOf="@+id/num_of_q_spinner"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/container" />
-
-        <Spinner
-            android:id="@+id/num_of_q_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView_num_of_q"
-            app:layout_constraintTop_toBottomOf="@+id/container" />
 
 
         <!-- Q1 -->
@@ -78,7 +45,7 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_num_of_q"
+            app:layout_constraintTop_toBottomOf="@+id/container"
             tools:visibility="gone">
 
             <TextView
@@ -87,22 +54,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_q1" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputQ1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_inputQ1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_question"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/q1_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:padding="6dp"
+                android:textSize="20sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputA1"
@@ -120,6 +77,13 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView_correctAnswer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:visibility="gone"/>
         </LinearLayout>
 
         <!-- Q2 -->
@@ -143,22 +107,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_q2" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputQ2"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_inputQ2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_question"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/q2_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:padding="6dp"
+                android:textSize="20sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputA2"
@@ -176,6 +130,13 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView_correctAnswer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:visibility="gone"/>
         </LinearLayout>
 
         <!-- Q3 -->
@@ -199,22 +160,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_q3" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputQ3"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_inputQ3"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_question"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/q3_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:padding="6dp"
+                android:textSize="20sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputA3"
@@ -232,6 +183,13 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView_correctAnswer3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:visibility="gone"/>
         </LinearLayout>
 
         <!-- Q4 -->
@@ -255,22 +213,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_q4" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputQ4"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_inputQ4"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_question"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/q4_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:padding="6dp"
+                android:textSize="20sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputA4"
@@ -288,6 +236,13 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView_correctAnswer4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:visibility="gone"/>
         </LinearLayout>
 
         <!-- Q5 -->
@@ -311,22 +266,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_q5" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputQ5"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView_inputQ5"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_question"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/q5_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:padding="6dp"
+                android:textSize="20sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputA5"
@@ -344,10 +289,17 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView_correctAnswer5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:visibility="gone"/>
         </LinearLayout>
 
         <mehdi.sakout.fancybuttons.FancyButton
-            android:id="@+id/upload_test_button"
+            android:id="@+id/finish_test_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

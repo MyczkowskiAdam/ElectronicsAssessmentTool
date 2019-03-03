@@ -25,6 +25,6 @@
 # This rule will properly ProGuard all the model classes in
 # the package com.yourcompany.models. Modify to fit the structure
 # of your app.
--keepclassmembers class com.software.mycax.eat.models.** {
-  *;
-}
+-keepclassmembers class com.software.mycax.eat.models.** { *; }
+-keep class com.wang.avi.** { *; }
+-keep class com.wang.avi.indicators.** { *; }

@@ -9,6 +9,7 @@ public class TestSet {
     private List<TestQuestion> questionList;
     private String teacherCode;
     private String testTopic;
+    private int testSize;
 
     public TestSet() {
         // Default constructor required for calls to DataSnapshot.getValue(TestSet.class)
@@ -68,5 +69,9 @@ public class TestSet {
 
     public int getTestSize() {
         return questionList.size();
+    }
+
+    public void setTestSize(int testSize) {
+        this.testSize = testSize;
     }
 }

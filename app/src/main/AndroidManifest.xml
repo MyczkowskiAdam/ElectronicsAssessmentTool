@@ -15,9 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".acitivities.AttemptTestActivity" />
+        <activity android:name=".acitivities.UpdateTestActivity" />
         <activity
             android:name=".acitivities.UpdateProfileActivity"
-            android:label="@string/action_update_profile"/>
+            android:label="@string/action_update_profile" />
         <activity
             android:name=".acitivities.SignupActivity"
             android:label="@string/action_sign_up"

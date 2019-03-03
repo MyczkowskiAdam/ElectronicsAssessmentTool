@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mlsdev.animatedrv.AnimatedRecyclerView;
 import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.models.ManageStudent;
@@ -23,14 +23,14 @@ import java.util.List;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
-public class ManageStudentAdapter extends RecyclerView.Adapter<ManageStudentAdapter.ItemHolder> {
+public class ManageStudentAdapter extends AnimatedRecyclerView.Adapter<ManageStudentAdapter.ItemHolder> {
     private final List<ManageStudent> manageStudentList;
 
     public ManageStudentAdapter(List<ManageStudent> manageStudentList) {
         this.manageStudentList = manageStudentList;
     }
 
-    class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemHolder extends AnimatedRecyclerView.ViewHolder implements View.OnClickListener {
         final TextView name;
         final TextView email;
         private final FancyButton bResetPass;
