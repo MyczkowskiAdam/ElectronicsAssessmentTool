@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<me.dkzwm.widget.srl.SmoothRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/frame_container"
+    android:id="@+id/manage_students_fragment_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.ManageStudentsFragment">
@@ -23,14 +23,6 @@
         android:layout_height="64dp"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_refresh_24dp" />
-
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/avi"
-        android:layout_gravity="center"
-        style="@style/AVLoadingIndicatorView.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:indicatorColor="@color/colorPrimary"
-        app:indicatorName="LineScalePulseOutIndicator" />
-</FrameLayout>
+        app:srcCompat="@drawable/ic_refresh_24dp"
+        android:contentDescription="@string/image_description_empty" />
+</me.dkzwm.widget.srl.SmoothRefreshLayout>

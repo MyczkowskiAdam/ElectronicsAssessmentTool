@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,13 +35,12 @@ import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.models.User;
 
-import java.util.Objects;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class UpdateProfileActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
     private FirebaseUser mFirebaseUser;
+    private DatabaseReference mDatabase;
     private User mUser;
     private EditText eName;
     private EditText eSchoolCode;
@@ -59,6 +57,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseUser = mAuth.getCurrentUser();
         eName = findViewById(R.id.name_edit_text);
         eSchoolCode = findViewById(R.id.school_code_edit_text);
@@ -79,7 +78,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
      * method is used to retrieve data from Firebase database
      */
     private void setUserData() {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -148,7 +146,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                                         }
                                     });
 
-                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
                             User updateUser = new User(mFirebaseUser.getUid(), eName.getText().toString(), mFirebaseUser.getEmail(), eSchoolCode.getText().toString(),
                                     eTeacherCode.getText().toString(), accountType,
                                     eTeacherCode.getText().toString() + "_" + accountType);

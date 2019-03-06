@@ -140,7 +140,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(eName.getText().toString()).build();
         firebaseUser.updateProfile(profileUpdates); // Upload profile changes to Firebase
-        mDatabase.child("users").child(firebaseUser.getUid()).setValue(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+        mDatabase.child(Utils.CHILD_REF_USERS).child(firebaseUser.getUid()).setValue(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
             // Upload new user's data to Firebase database
             @Override
             public void onSuccess(Void aVoid) {

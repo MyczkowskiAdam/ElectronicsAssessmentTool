@@ -37,7 +37,7 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
 
         void onHandleTestUpdate(int position, String testUid);
 
-        void onCheckEmpty();
+        void onCheckEmpty(int itemCount);
     }
 
     public DashboardAdapter(DashboardCallbackInterface mCallback) {
@@ -75,7 +75,7 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child("tests").child(testUid);
+                                    DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child(Utils.CHILD_REF_TESTS).child(testUid);
                                     mPostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -84,7 +84,7 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
                                                 Snackbar.make(v, R.string.test_delete_success, Snackbar.LENGTH_LONG).show();
                                                 testLinkList.remove(getAdapterPosition());
                                                 notifyItemRemoved(getAdapterPosition());
-                                                mCallback.onCheckEmpty();
+                                                mCallback.onCheckEmpty(getItemCount());
                                             } else {
                                                 Log.w(Utils.getTag(), "deleteTest:failure", task.getException());
                                                 Snackbar.make(v, R.string.test_delete_failure, Snackbar.LENGTH_LONG).show();
@@ -132,6 +132,11 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
     public void addItem(TestLink testLink) {
         testLinkList.add(testLink);
         notifyItemInserted(getItemCount() - 1);
+    }
+
+    public void removeItem(int position) {
+        testLinkList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public void setItem(int position, TestLink testLink) {

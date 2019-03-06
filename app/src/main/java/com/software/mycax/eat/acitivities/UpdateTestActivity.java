@@ -51,8 +51,8 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            testUid = extras.getString("testUid");
-            adapterPosition = extras.getInt("adapterPosition");
+            testUid = extras.getString(Utils.EXTRA_STRING_TESTUID);
+            adapterPosition = extras.getInt(Utils.EXTRA_INT_ADAPTER_POSITION);
         }
 
         eTestTtle = findViewById(R.id.test_title_edit_text);
@@ -100,13 +100,12 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
 
     private void getTestData() {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("tests").child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_TESTS).child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 TestSet testSet = dataSnapshot.getValue(TestSet.class);
                 if (testSet != null) {
                     eTestTtle.setText(testSet.getTestTopic());
-                    Log.d(Utils.getTag(), "testSize:" + testSet.getTestSize());
                     for (int i = 0; i < 5; i++) {
                         if(i < testSet.getTestSize()) {
                             testSize++;
@@ -150,25 +149,25 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-                                mDatabase.getReference().child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+                                mDatabase.getReference().child(Utils.CHILD_REF_USERS).child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        String teacherCode = dataSnapshot.child("teacherCode").getValue(String.class);
+                                        String teacherCode = dataSnapshot.child(Utils.CHILD_REF_TEACHER_CODE).getValue(String.class);
                                         Log.d(Utils.getTag(), "onDataChange: read value success");
                                         TestSet testSet = new TestSet("picUrl", testUid, teacherCode, eTestTtle.getText().toString());
                                         for (int i = 0; i < testSize; i++) {
                                             testSet.addQuestion(new TestQuestion(inputQuestionList.get(i).getText().toString(), inputAnswerList.get(i).getText().toString()));
                                         }
-                                        mDatabase.getReference().child("tests").child(testUid).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        mDatabase.getReference().child(Utils.CHILD_REF_TESTS).child(testUid).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             // Upload new user's data to Firebase database
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Log.d(Utils.getTag(), "createTestDatabaseEntry:success");
                                                 Snackbar.make(v, R.string.test_upload_success, Snackbar.LENGTH_LONG).show();
                                                 Intent resultIntent = new Intent();
-                                                resultIntent.putExtra("isEdited", true);
-                                                resultIntent.putExtra("adapterPosition", adapterPosition);
-                                                resultIntent.putExtra("testUid", testUid);
+                                                resultIntent.putExtra(Utils.EXTRA_BOOLEAN_IS_EDITED, true);
+                                                resultIntent.putExtra(Utils.EXTRA_INT_ADAPTER_POSITION, adapterPosition);
+                                                resultIntent.putExtra(Utils.EXTRA_STRING_TESTUID, testUid);
                                                 setResult(RESULT_OK, resultIntent);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {

@@ -4,10 +4,10 @@ package com.software.mycax.eat.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,18 +33,21 @@ import com.software.mycax.eat.acitivities.UpdateTestActivity;
 import com.software.mycax.eat.adapters.DashboardAdapter;
 import com.software.mycax.eat.models.TestLink;
 import com.software.mycax.eat.models.TestSet;
-import com.wang.avi.AVLoadingIndicatorView;
+
+import me.dkzwm.widget.srl.SmoothRefreshLayout;
+import me.dkzwm.widget.srl.extra.header.MaterialHeader;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashboardFragment extends Fragment implements DashboardAdapter.DashboardCallbackInterface {
+public class DashboardFragment extends Fragment implements DashboardAdapter.DashboardCallbackInterface, SmoothRefreshLayout.OnRefreshListener {
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabase;
     private AnimatedRecyclerView recyclerView;
-    private AVLoadingIndicatorView loadingIndicatorView;
     private DashboardAdapter dashboardAdapter;
     private ImageView imageEmpty;
+    private Handler mHandler;
+    private SmoothRefreshLayout mRefreshLayout;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -62,26 +65,26 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
         getActivity().setTitle(R.string.menu_dashboard);
 
         imageEmpty = v.findViewById(R.id.imageEmpty);
-        loadingIndicatorView = v.findViewById(R.id.avi);
         recyclerView = v.findViewById(R.id.rv);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom);
         recyclerView.setLayoutAnimation(animationController);
-        dashboardAdapter = new DashboardAdapter(this);
-        recyclerView.setAdapter(dashboardAdapter);
+        mHandler = new Handler();
+        mRefreshLayout = v.findViewById(R.id.dashboard_fragment_refresh);
         mFirebaseUser = mAuth.getCurrentUser();
+        mRefreshLayout.setHeaderView(new MaterialHeader(getActivity()));
+        mRefreshLayout.setOnRefreshListener(this);
         if (mFirebaseUser != null) {
-            getAccountInfo();
+            mRefreshLayout.autoRefresh();
         }
         return v;
     }
 
     private void getAccountInfo() {
-        loadingIndicatorView.smoothToShow();
-        mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_USERS).child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String teacherCode = dataSnapshot.child("teacherCode").getValue(String.class);
-                Integer accountType = dataSnapshot.child("accountType").getValue(Integer.class);
+                String teacherCode = dataSnapshot.child(Utils.CHILD_REF_TEACHER_CODE).getValue(String.class);
+                Integer accountType = dataSnapshot.child(Utils.CHILD_REF_ACCOUNT_TYPE).getValue(Integer.class);
                 Log.d(Utils.getTag(), "onDataChange: read users value success");
                 if (teacherCode != null && accountType != null) {
                     dashboardAdapter.setAccountType(accountType);
@@ -98,7 +101,7 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
     }
 
     private void getTests(String teacherCode, final Integer accountTypeBoxed) {
-        mDatabase.child("tests").orderByChild("teacherCode").equalTo(teacherCode).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_TESTS).orderByChild(Utils.CHILD_REF_TEACHER_CODE).equalTo(teacherCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //create a list of ManageStudent items
@@ -114,8 +117,8 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                         }
                     }
                 }
-                onCheckEmpty();
                 recyclerView.scheduleLayoutAnimation();
+                onCheckEmpty(dashboardAdapter.getItemCount());
             }
 
             @Override
@@ -124,11 +127,10 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                 Log.e(Utils.getTag(), "onCancelled: failed to read tests value", error.toException());
             }
         });
-        loadingIndicatorView.smoothToHide();
     }
 
     private void removeCompletedTest(final TestSet testSet) {
-        mDatabase.child("testResults").child(mFirebaseUser.getUid()).child(testSet.getTestUid()).child("completed").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_TEST_RESULTS).child(mFirebaseUser.getUid()).child(testSet.getTestUid()).child(Utils.CHILD_REF_COMPLETED).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //create a list of ManageStudent items
@@ -153,22 +155,22 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
     @Override
     public void onHandleTestCompletion(int position, String testUid) {
         Intent intent = new Intent(getActivity(), AttemptTestActivity.class);
-        intent.putExtra("testUid", testUid);
-        intent.putExtra("adapterPosition", position);
+        intent.putExtra(Utils.EXTRA_STRING_TESTUID, testUid);
+        intent.putExtra(Utils.EXTRA_INT_ADAPTER_POSITION, position);
         getActivity().startActivityForResult(intent, Utils.ATTEMPT_TEST_INTENT);
     }
 
     @Override
     public void onHandleTestUpdate(int position, String testUid) {
         Intent intent = new Intent(getActivity(), UpdateTestActivity.class);
-        intent.putExtra("testUid", testUid);
-        intent.putExtra("adapterPosition", position);
+        intent.putExtra(Utils.EXTRA_STRING_TESTUID, testUid);
+        intent.putExtra(Utils.EXTRA_INT_ADAPTER_POSITION, position);
         getActivity().startActivityForResult(intent, Utils.EDIT_TEST_INTENT);
     }
 
     @Override
-    public void onCheckEmpty() {
-        if (dashboardAdapter.getItemCount() < 1) {
+    public void onCheckEmpty(int itemCount) {
+        if (itemCount < 1) {
             recyclerView.setVisibility(View.GONE);
             imageEmpty.setVisibility(View.VISIBLE);
         }
@@ -182,21 +184,22 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Utils.ATTEMPT_TEST_INTENT) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                boolean isCompleted = data.getBooleanExtra("isCompleted", false);
+                boolean isCompleted = data.getBooleanExtra(Utils.EXTRA_BOOLEAN_IS_COMPLETED, false);
                 if (isCompleted) {
-                    int adapterPosition = data.getIntExtra("adapterPosition", -1);
+                    int adapterPosition = data.getIntExtra(Utils.EXTRA_INT_ADAPTER_POSITION, -1);
                     if (adapterPosition != -1) {
-                        dashboardAdapter.notifyItemRemoved(adapterPosition);
+                        dashboardAdapter.removeItem(adapterPosition);
+                        onCheckEmpty(dashboardAdapter.getItemCount());
                     }
                 }
             }
         } else if (requestCode == Utils.EDIT_TEST_INTENT && mFirebaseUser != null) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                boolean isEdited = data.getBooleanExtra("isEdited", false);
+                boolean isEdited = data.getBooleanExtra(Utils.EXTRA_BOOLEAN_IS_EDITED, false);
                 if (isEdited) {
-                    int adapterPosition = data.getIntExtra("adapterPosition", -1);
+                    int adapterPosition = data.getIntExtra(Utils.EXTRA_INT_ADAPTER_POSITION, -1);
                     if (adapterPosition != -1) {
-                        String testUid = data.getStringExtra("testUid");
+                        String testUid = data.getStringExtra(Utils.EXTRA_STRING_TESTUID);
                         getTestData(testUid, adapterPosition);
                     }
                 }
@@ -206,7 +209,7 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
 
     private void getTestData(String testUid, final int adapterPosition) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("tests").child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_TESTS).child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 TestSet testSet = dataSnapshot.getValue(TestSet.class);
@@ -221,5 +224,24 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                 Log.e(Utils.getTag(), "onCancelled: failed to read value", error.toException());
             }
         });
+    }
+
+    @Override
+    public void onRefreshing() {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dashboardAdapter = new DashboardAdapter(DashboardFragment.this);
+                    getAccountInfo();
+                    recyclerView.setAdapter(dashboardAdapter);
+                    mRefreshLayout.refreshComplete();
+                    Log.d(Utils.getTag(), "Refreshing");
+                }
+            }, 1000);
+    }
+
+    @Override
+    public void onLoadingMore() {
+        Log.d(Utils.getTag(), "Loading more");
     }
 }

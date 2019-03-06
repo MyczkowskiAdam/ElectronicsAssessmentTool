@@ -21,6 +21,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         // Required empty public constructor
     }
 
+    //TODO: Finish Settings fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

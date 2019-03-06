@@ -25,6 +25,17 @@ public class Utils {
     public static final String MANAGE_STUDENTS_TAG = "manage_students_fragment";
     public static final String SETTINGS_TAG = "settings_fragment";
     public static final String TEST_CREATOR_TAG = "test_creator_fragment";
+    public static final String CHILD_REF_USERS = "users";
+    public static final String CHILD_REF_TEACHER_CODE = "teacherCode";
+    public static final String CHILD_REF_ACCOUNT_KEY = "accountKey";
+    public static final String CHILD_REF_ACCOUNT_TYPE = "accountType";
+    public static final String CHILD_REF_TESTS = "tests";
+    public static final String CHILD_REF_TEST_RESULTS = "testResults";
+    public static final String CHILD_REF_COMPLETED = "completed";
+    public static final String EXTRA_INT_ADAPTER_POSITION = "adapterPoition";
+    public static final String EXTRA_STRING_TESTUID = "testUid";
+    public static final String EXTRA_BOOLEAN_IS_COMPLETED = "isCompleted";
+    public static final String EXTRA_BOOLEAN_IS_EDITED = "isEdited";
 
     /**
      * method is used for checking valid email id format.

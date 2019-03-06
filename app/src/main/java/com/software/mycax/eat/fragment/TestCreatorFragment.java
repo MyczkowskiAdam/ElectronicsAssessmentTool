@@ -139,17 +139,17 @@ public class TestCreatorFragment extends Fragment implements View.OnClickListene
         if (v.getId() == R.id.upload_test_button) {
             if (Utils.isTestInputValid(v, questionNumberSpinner.getSelectedItemPosition()+1, inputAnswerList, inputQuestionList, eTestTtle)) {
                 final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-                mDatabase.getReference().child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+                mDatabase.getReference().child(Utils.CHILD_REF_USERS).child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String teacherCode = dataSnapshot.child("teacherCode").getValue(String.class);
+                        String teacherCode = dataSnapshot.child(Utils.CHILD_REF_TEACHER_CODE).getValue(String.class);
                         Log.d(Utils.getTag(), "onDataChange: read value success");
-                        String key = mDatabase.getReference("tests").push().getKey();
+                        String key = mDatabase.getReference(Utils.CHILD_REF_TESTS).push().getKey();
                         TestSet testSet = new TestSet("picUrl", key, teacherCode, eTestTtle.getText().toString());
                         for (int i = 0; i <= questionNumberSpinner.getSelectedItemPosition(); i++) {
                             testSet.addQuestion(new TestQuestion(inputQuestionList.get(i).getText().toString(), inputAnswerList.get(i).getText().toString()));
                         }
-                        mDatabase.getReference().child("tests").child(Objects.requireNonNull(key)).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        mDatabase.getReference().child(Utils.CHILD_REF_TESTS).child(Objects.requireNonNull(key)).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
                             // Upload new user's data to Firebase database
                             @Override
                             public void onSuccess(Void aVoid) {

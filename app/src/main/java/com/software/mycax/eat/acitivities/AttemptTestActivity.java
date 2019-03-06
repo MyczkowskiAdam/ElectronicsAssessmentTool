@@ -58,8 +58,8 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            testUid = extras.getString("testUid");
-            adapterPosition = extras.getInt("adapterPosition");
+            testUid = extras.getString(Utils.EXTRA_STRING_TESTUID);
+            adapterPosition = extras.getInt(Utils.EXTRA_INT_ADAPTER_POSITION);
         }
 
         fabOpen = AnimationUtils.loadAnimation(this,R.anim.fab_open);
@@ -122,13 +122,12 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
 
     private void getTestData() {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("tests").child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(Utils.CHILD_REF_TESTS).child(testUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 TestSet testSet = dataSnapshot.getValue(TestSet.class);
                 if (testSet != null) {
                     tTestTitle.setText(testSet.getTestTopic());
-                    Log.d(Utils.getTag(), "testSize:" + testSet.getTestSize());
                     for (int i = 0; i < 5; i++) {
                         if(i < testSet.getTestSize()) {
                             testSize++;
@@ -183,15 +182,15 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
                                 }
                                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
                                 TestResults testResults = new TestResults(testUid, correctAnswers, testSize, true);
-                                mDatabase.child("testResults").child(mUser.getUid()).child(testUid).setValue(testResults).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                mDatabase.child(Utils.CHILD_REF_TEST_RESULTS).child(mUser.getUid()).child(testUid).setValue(testResults).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d(Utils.getTag(), "testResultsUpload:success");
                                             Snackbar.make(v, R.string.test_result_success, Snackbar.LENGTH_LONG).show();
                                             Intent resultIntent = new Intent();
-                                            resultIntent.putExtra("isCompleted", true);
-                                            resultIntent.putExtra("adapterPosition", adapterPosition);
+                                            resultIntent.putExtra(Utils.EXTRA_BOOLEAN_IS_COMPLETED, true);
+                                            resultIntent.putExtra(Utils.EXTRA_INT_ADAPTER_POSITION, adapterPosition);
                                             setResult(RESULT_OK, resultIntent);
                                         } else {
                                             Log.w(Utils.getTag(),"testResultsUpload:failure", task.getException());

@@ -56,6 +56,7 @@
     <string name="text_finish_test">Are you sure you want to finish test?</string>
     <string name="text_update_profile">Are you sure you want to update profile?</string>
     <string name="text_remove_picture">Are you sure you want to remove your profile picture?</string>
+    <string name="image_description_empty">Empty adapter</string>
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_testcreator">Test creator</string>
