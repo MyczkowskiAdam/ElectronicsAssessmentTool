@@ -2,6 +2,7 @@ package com.software.mycax.eat.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+@SuppressWarnings("unused")
 @IgnoreExtraProperties
 public final class User {
     private String userUid;

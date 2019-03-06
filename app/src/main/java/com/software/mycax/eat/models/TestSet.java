@@ -3,12 +3,14 @@ package com.software.mycax.eat.models;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TestSet {
     private String circuitUrl;
     private String testUid;
     private List<TestQuestion> questionList;
     private String teacherCode;
     private String testTopic;
+    @SuppressWarnings("FieldCanBeLocal")
     private int testSize;
 
     public TestSet() {

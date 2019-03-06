@@ -16,13 +16,15 @@ public class Utils {
     public static final int ACCOUNT_STUDENT = 0;
     public static final int ACCOUNT_TEACHER = 1;
     public static final int GALLERY_INTENT = 1;
-    public static final int ONE_QUESTION = 0;
-    public static final int TWO_QUESTION = 1;
-    public static final int THREE_QUESTION = 2;
-    public static final int FOUR_QUESTION = 3;
-    public static final int FIVE_QUESTION = 4;
+    public static final int ATTEMPT_TEST_INTENT = 3;
+    public static final int EDIT_TEST_INTENT = 4;
     public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     public static final String PREF_PROFILE_UPDATE = "pref_profile_update";
+    public static final String DASHBOARD_TAG = "dashboard_fragment";
+    public static final String ANALYTICS_TAG = "analytics_fragment";
+    public static final String MANAGE_STUDENTS_TAG = "manage_students_fragment";
+    public static final String SETTINGS_TAG = "settings_fragment";
+    public static final String TEST_CREATOR_TAG = "test_creator_fragment";
 
     /**
      * method is used for checking valid email id format.
@@ -56,6 +58,7 @@ public class Utils {
      * the number of potential passwords and removing password permutations
      * that don't match your rules.
      */
+    @SuppressWarnings("unused")
     private static boolean isPasswordValid(final String password) {
         final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern pattern = Pattern.compile(PASSWORD_PATTERN);

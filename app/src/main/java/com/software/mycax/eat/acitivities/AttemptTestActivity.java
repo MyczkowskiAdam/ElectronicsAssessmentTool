@@ -3,6 +3,9 @@ package com.software.mycax.eat.acitivities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -41,7 +44,7 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
     private List<TextView> inputQuestionList, correctAnswerstList;
     private List<LinearLayout> questionLayoutList;
     private Animation fabOpen;
-    private int testSize, correctAnswers;
+    private int testSize, correctAnswers, adapterPosition;
     private FirebaseUser mUser;
 
     @Override
@@ -54,8 +57,10 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null)
+        if(extras != null) {
             testUid = extras.getString("testUid");
+            adapterPosition = extras.getInt("adapterPosition");
+        }
 
         fabOpen = AnimationUtils.loadAnimation(this,R.anim.fab_open);
 
@@ -161,29 +166,44 @@ public class AttemptTestActivity extends AppCompatActivity implements View.OnCli
     public void onClick(final View v) {
         if (v.getId() == R.id.finish_test_button) {
             if (Utils.isTestInputValid(v, testSize, inputAnswerList, null, null)) {
-                for (int i = 0; i < testSize; i++) {
-                    if (inputAnswerList.get(i).getText().toString().equals(correctAnswerstList.get(i).getText().toString())) {
-                        correctAnswers++;
-                    } else {
-                        correctAnswerstList.get(i).setVisibility(View.VISIBLE);
-                        correctAnswerstList.get(i).setTextColor(getResources().getColor(android.R.color.holo_red_light));
-                        correctAnswerstList.get(i).startAnimation(fabOpen);
-                    }
-                }
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                TestResults testResults = new TestResults(testUid, correctAnswers, testSize, true);
-                mDatabase.child("testResults").child(mUser.getUid()).child(testUid).setValue(testResults).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(Utils.getTag(), "testResultsUpload:success");
-                            Snackbar.make(v, R.string.test_result_success, Snackbar.LENGTH_LONG).show();
-                        } else {
-                            Log.w(Utils.getTag(),"testResultsUpload:failure", task.getException());
-                            Snackbar.make(v, R.string.test_result_failure, Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle(R.string.action_finish_test)
+                        .setMessage(R.string.text_finish_test)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                for (int i = 0; i < testSize; i++) {
+                                    if (inputAnswerList.get(i).getText().toString().equals(correctAnswerstList.get(i).getText().toString())) {
+                                        correctAnswers++;
+                                    } else {
+                                        correctAnswerstList.get(i).setVisibility(View.VISIBLE);
+                                        correctAnswerstList.get(i).setTextColor(getResources().getColor(android.R.color.holo_red_light));
+                                        correctAnswerstList.get(i).startAnimation(fabOpen);
+                                    }
+                                }
+                                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                                TestResults testResults = new TestResults(testUid, correctAnswers, testSize, true);
+                                mDatabase.child("testResults").child(mUser.getUid()).child(testUid).setValue(testResults).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(Utils.getTag(), "testResultsUpload:success");
+                                            Snackbar.make(v, R.string.test_result_success, Snackbar.LENGTH_LONG).show();
+                                            Intent resultIntent = new Intent();
+                                            resultIntent.putExtra("isCompleted", true);
+                                            resultIntent.putExtra("adapterPosition", adapterPosition);
+                                            setResult(RESULT_OK, resultIntent);
+                                        } else {
+                                            Log.w(Utils.getTag(),"testResultsUpload:failure", task.getException());
+                                            Snackbar.make(v, R.string.test_result_failure, Snackbar.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            }
+
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
             }
         }
     }

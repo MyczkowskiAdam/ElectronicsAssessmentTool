@@ -6,6 +6,8 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -117,44 +119,55 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         }
         if (v.getId() == R.id.update_user_button)  {
             // Add new picture to profile builder
-            UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
-            if (mUri != null) {
-                builder.setPhotoUri(mUri);
-            }
-            builder.setDisplayName(eName.getText().toString());
-            UserProfileChangeRequest profileUpdates = builder.build();
-            mFirebaseUser.updateProfile(profileUpdates) // Upload changes to Firebase
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle(R.string.action_update_profile)
+                    .setMessage(R.string.text_update_profile)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(Utils.getTag(), "profileUpdate:success");
-                                Snackbar.make(v, R.string.update_profile, Snackbar.LENGTH_LONG).show();
-                            } else {
-                                Log.w(Utils.getTag(), "profileUpdate:failure");
-                                Snackbar.make(v, R.string.update_profile_failure, Snackbar.LENGTH_LONG).show();
+                        public void onClick(DialogInterface dialog, int which) {
+                            UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+                            if (mUri != null) {
+                                builder.setPhotoUri(mUri);
                             }
-                        }
-                    });
+                            builder.setDisplayName(eName.getText().toString());
+                            UserProfileChangeRequest profileUpdates = builder.build();
+                            mFirebaseUser.updateProfile(profileUpdates) // Upload changes to Firebase
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(Utils.getTag(), "profileUpdate:success");
+                                                Snackbar.make(v, R.string.update_profile, Snackbar.LENGTH_LONG).show();
+                                            } else {
+                                                Log.w(Utils.getTag(), "profileUpdate:failure");
+                                                Snackbar.make(v, R.string.update_profile_failure, Snackbar.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
 
-            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            User updateUser = new User(mFirebaseUser.getUid(), eName.getText().toString(), mFirebaseUser.getEmail(), eSchoolCode.getText().toString(),
-                    eTeacherCode.getText().toString(), accountType,
-                    eTeacherCode.getText().toString() + "_" + accountType);
-            // Upload changes to Firebase database
-            mDatabase.child("users").child(mFirebaseUser.getUid()).setValue(updateUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(Utils.getTag(), "createUserDatabaseEntry:success");
-                    Snackbar.make(v, R.string.update_success, Snackbar.LENGTH_LONG).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(Utils.getTag(), "createUserDatabaseEntry:failure; deleting user", e.getCause());
-                    Snackbar.make(v, R.string.update_failure, Snackbar.LENGTH_LONG).show();
-                }
-            });
+                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                            User updateUser = new User(mFirebaseUser.getUid(), eName.getText().toString(), mFirebaseUser.getEmail(), eSchoolCode.getText().toString(),
+                                    eTeacherCode.getText().toString(), accountType,
+                                    eTeacherCode.getText().toString() + "_" + accountType);
+                            // Upload changes to Firebase database
+                            mDatabase.child("users").child(mFirebaseUser.getUid()).setValue(updateUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(Utils.getTag(), "createUserDatabaseEntry:success");
+                                    Snackbar.make(v, R.string.update_success, Snackbar.LENGTH_LONG).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(Utils.getTag(), "createUserDatabaseEntry:failure; deleting user", e.getCause());
+                                    Snackbar.make(v, R.string.update_failure, Snackbar.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
         }
     }
 

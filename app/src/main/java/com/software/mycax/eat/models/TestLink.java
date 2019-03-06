@@ -1,5 +1,6 @@
 package com.software.mycax.eat.models;
 
+@SuppressWarnings("unused")
 public class TestLink {
     private String testUid;
     private String testTopic;

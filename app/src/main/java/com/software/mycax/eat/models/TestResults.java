@@ -1,5 +1,6 @@
 package com.software.mycax.eat.models;
 
+@SuppressWarnings("unused")
 public class TestResults {
     private String testUid;
     private int score;

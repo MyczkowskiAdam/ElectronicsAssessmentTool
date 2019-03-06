@@ -70,11 +70,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             hView = navigationView.inflateHeaderView(R.layout.nav_header_main);
             getUser();
         }
-        moveFragment(new DashboardFragment());
+        moveFragment(new DashboardFragment(), Utils.DASHBOARD_TAG);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         if (hView != null) {
             updateDrawer();
@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
         textViewName.setText(mFirebaseUser.getDisplayName());
         textViewEmail.setText(mFirebaseUser.getEmail());
-        if (mFirebaseUser.getPhotoUrl() != null) Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
+        if (mFirebaseUser.getPhotoUrl() != null)
+            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
     }
 
     /**
@@ -137,19 +138,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_dashboard:
-                moveFragment(new DashboardFragment());
+                moveFragment(new DashboardFragment(), Utils.DASHBOARD_TAG);
                 break;
             case R.id.nav_test_creator:
-                moveFragment(new TestCreatorFragment());
+                moveFragment(new TestCreatorFragment(), Utils.TEST_CREATOR_TAG);
                 break;
             case R.id.nav_analytics:
-                moveFragment(new AnalyticsFragment());
+                moveFragment(new AnalyticsFragment(), Utils.ANALYTICS_TAG);
                 break;
             case R.id.nav_manage_students:
-                moveFragment(new ManageStudentsFragment());
+                moveFragment(new ManageStudentsFragment(), Utils.MANAGE_STUDENTS_TAG);
                 break;
             case R.id.nav_settings:
-                moveFragment(new SettingsFragment());
+                moveFragment(new SettingsFragment(), Utils.SETTINGS_TAG);
                 break;
             case R.id.nav_log_out:
                 FirebaseAuth.getInstance().signOut();
@@ -167,8 +168,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *
      * @param fragment * target fragment to replace *
      */
-    private void moveFragment(Fragment fragment) {
+    private void moveFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, fragment).commit();
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).commit();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == Utils.ATTEMPT_TEST_INTENT || requestCode == Utils.EDIT_TEST_INTENT) {
+            Fragment fragment = getFragmentManager().findFragmentByTag(Utils.DASHBOARD_TAG);
+            if (fragment != null) {
+                fragment.onActivityResult(requestCode, resultCode, intent);
+            }
+        }
     }
 }

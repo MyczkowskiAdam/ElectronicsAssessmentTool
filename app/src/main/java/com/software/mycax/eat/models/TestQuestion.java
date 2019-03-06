@@ -1,5 +1,6 @@
 package com.software.mycax.eat.models;
 
+@SuppressWarnings("unused")
 public class TestQuestion {
     private String question;
     private String answer;

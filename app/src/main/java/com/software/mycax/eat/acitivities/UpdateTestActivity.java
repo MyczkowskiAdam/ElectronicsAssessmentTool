@@ -3,12 +3,13 @@ package com.software.mycax.eat.acitivities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -33,13 +34,12 @@ import java.util.Objects;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class UpdateTestActivity extends AppCompatActivity implements View.OnClickListener{
-    private int prevPosition;
     private EditText eTestTtle;
     private List<EditText> inputQuestionList, inputAnswerList;
     private List<LinearLayout> questionLayoutList;
     private FirebaseAuth mAuth;
     private String testUid;
-    private int testSize;
+    private int testSize, adapterPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +50,10 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null)
+        if(extras != null) {
             testUid = extras.getString("testUid");
+            adapterPosition = extras.getInt("adapterPosition");
+        }
 
         eTestTtle = findViewById(R.id.test_title_edit_text);
         EditText eQuestion1 = findViewById(R.id.q1_edit_text);
@@ -89,9 +91,6 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
         questionLayoutList.add(questionContainer3);
         questionLayoutList.add(questionContainer4);
         questionLayoutList.add(questionContainer5);
-
-        Animation fabOpen = AnimationUtils.loadAnimation(this, R.anim.fab_open);
-        Animation fabClose = AnimationUtils.loadAnimation(this, R.anim.fab_close);
 
         FancyButton bUploadTest = findViewById(R.id.upload_test_button);
         bUploadTest.setOnClickListener(this);
@@ -144,39 +143,54 @@ public class UpdateTestActivity extends AppCompatActivity implements View.OnClic
     public void onClick(final View v) {
         if (v.getId() == R.id.upload_test_button) {
             if (Utils.isTestInputValid(v, testSize, inputAnswerList, inputQuestionList, eTestTtle)) {
-                final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-                mDatabase.getReference().child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String teacherCode = dataSnapshot.child("teacherCode").getValue(String.class);
-                        Log.d(Utils.getTag(), "onDataChange: read value success");
-                        String key = mDatabase.getReference("tests").push().getKey();
-                        TestSet testSet = new TestSet("picUrl", key, teacherCode, eTestTtle.getText().toString());
-                        for (int i = 0; i < testSize; i++) {
-                            testSet.addQuestion(new TestQuestion(inputQuestionList.get(i).getText().toString(), inputAnswerList.get(i).getText().toString()));
-                        }
-                        mDatabase.getReference().child("tests").child(Objects.requireNonNull(key)).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            // Upload new user's data to Firebase database
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle(R.string.action_update_test)
+                        .setMessage(R.string.text_update_test)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(Utils.getTag(), "createTestDatabaseEntry:success");
-                                Snackbar.make(v, R.string.test_upload_success, Snackbar.LENGTH_LONG).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(Utils.getTag(), "createTestDatabaseEntry:failure; deleting user", e.getCause());
-                                Snackbar.make(v, R.string.test_upload_failed, Snackbar.LENGTH_LONG).show();
-                            }
-                        });
-                    }
+                            public void onClick(DialogInterface dialog, int which) {
+                                final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+                                mDatabase.getReference().child("users").child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String teacherCode = dataSnapshot.child("teacherCode").getValue(String.class);
+                                        Log.d(Utils.getTag(), "onDataChange: read value success");
+                                        TestSet testSet = new TestSet("picUrl", testUid, teacherCode, eTestTtle.getText().toString());
+                                        for (int i = 0; i < testSize; i++) {
+                                            testSet.addQuestion(new TestQuestion(inputQuestionList.get(i).getText().toString(), inputAnswerList.get(i).getText().toString()));
+                                        }
+                                        mDatabase.getReference().child("tests").child(testUid).setValue(testSet).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            // Upload new user's data to Firebase database
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(Utils.getTag(), "createTestDatabaseEntry:success");
+                                                Snackbar.make(v, R.string.test_upload_success, Snackbar.LENGTH_LONG).show();
+                                                Intent resultIntent = new Intent();
+                                                resultIntent.putExtra("isEdited", true);
+                                                resultIntent.putExtra("adapterPosition", adapterPosition);
+                                                resultIntent.putExtra("testUid", testUid);
+                                                setResult(RESULT_OK, resultIntent);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w(Utils.getTag(), "createTestDatabaseEntry:failure; deleting user", e.getCause());
+                                                Snackbar.make(v, R.string.test_upload_failed, Snackbar.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // Failed to read value
-                        Log.e(Utils.getTag(), "onCancelled: failed to read value", error.toException());
-                    }
-                });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        // Failed to read value
+                                        Log.e(Utils.getTag(), "onCancelled: failed to read value", error.toException());
+                                    }
+                                });
+                            }
+
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
             }
         }
     }

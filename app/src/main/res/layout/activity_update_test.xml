@@ -43,29 +43,6 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView_num_of_q"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/prompt_num_of_q"
-            app:layout_constraintEnd_toStartOf="@+id/num_of_q_spinner"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/container" />
-
-        <Spinner
-            android:id="@+id/num_of_q_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView_num_of_q"
-            app:layout_constraintTop_toBottomOf="@+id/container" />
-
-
         <!-- Q1 -->
         <LinearLayout
             android:id="@+id/containerQuestion1"
@@ -78,7 +55,7 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_num_of_q"
+            app:layout_constraintTop_toBottomOf="@+id/container"
             tools:visibility="gone">
 
             <TextView

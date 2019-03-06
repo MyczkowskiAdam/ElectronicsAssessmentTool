@@ -23,8 +23,11 @@
     <string name="action_update_profile">Update profile</string>
     <string name="action_reset_password">Reset password</string>
     <string name="action_upload_test">Upload test</string>
+    <string name="action_finish_test">Finish test</string>
     <string name="action_delete">Delete</string>
     <string name="action_edit">Edit</string>
+    <string name="action_delete_test">Delete test</string>
+    <string name="action_update_test">Update test</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_empty">Fields cannot be empty!</string>
     <string name="invalid_email">Email is not valid!</string>
@@ -47,6 +50,10 @@
     <string name="test_result_failure">A problem has occurred while saving results</string>
     <string name="pref_profile_update_summary">Change account info</string>
     <string name="text_reset_password">Are you sure you want to send password reset email to %1$s?</string>
+    <string name="text_delete_test">Are you sure you want to delete test %1$s?</string>
+    <string name="text_update_test">Are you sure you want to update test?</string>
+    <string name="text_finish_test">Are you sure you want to finish test?</string>
+    <string name="text_update_profile">Are you sure you want to update profile?</string>
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_testcreator">Test creator</string>
