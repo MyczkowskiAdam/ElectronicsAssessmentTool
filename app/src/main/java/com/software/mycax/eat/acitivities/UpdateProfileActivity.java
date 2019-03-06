@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,10 +36,12 @@ import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.models.User;
 
+import java.util.Objects;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import mehdi.sakout.fancybuttons.FancyButton;
 
-public class UpdateProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class UpdateProfileActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
     private FirebaseUser mFirebaseUser;
     private User mUser;
     private EditText eName;
@@ -67,6 +70,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
             // if user is signed in, allow data update
             setUserData();
             iProfilePic.setOnClickListener(this);
+            iProfilePic.setOnLongClickListener(this);
             bUpdateProfile.setOnClickListener(this);
         }
     }
@@ -86,7 +90,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                 eSchoolCode.setText(mUser.getSchoolCode());
                 tAccountLabel.setText(getString(R.string.label_your_account, mUser.getEmail()));
                 accountType = mUser.getAccountType();
-                if (mFirebaseUser.getPhotoUrl() != null) Glide.with(UpdateProfileActivity.this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
+                if (mFirebaseUser.getPhotoUrl() != null)
+                    Glide.with(UpdateProfileActivity.this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
             }
 
             @Override
@@ -117,7 +122,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                 pickImage();
             }
         }
-        if (v.getId() == R.id.update_user_button)  {
+        if (v.getId() == R.id.update_user_button) {
             // Add new picture to profile builder
             new AlertDialog.Builder(v.getContext())
                     .setTitle(R.string.action_update_profile)
@@ -126,9 +131,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
-                            if (mUri != null) {
-                                builder.setPhotoUri(mUri);
-                            }
+                            builder.setPhotoUri(mUri);
                             builder.setDisplayName(eName.getText().toString());
                             UserProfileChangeRequest profileUpdates = builder.build();
                             mFirebaseUser.updateProfile(profileUpdates) // Upload changes to Firebase
@@ -169,6 +172,27 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                     .setNegativeButton(android.R.string.no, null)
                     .show();
         }
+    }
+
+    @Override
+    public boolean onLongClick(final View v) {
+        if (v.getId() == R.id.imageViewProfilePic) {
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle(R.string.action_remove_picture)
+                    .setMessage(R.string.text_remove_picture)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            iProfilePic.setImageDrawable(getDrawable(R.drawable.ic_profile_image));
+                            mUri = null;
+                        }
+
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+            return true;
+        }
+        return false;
     }
 
     @Override

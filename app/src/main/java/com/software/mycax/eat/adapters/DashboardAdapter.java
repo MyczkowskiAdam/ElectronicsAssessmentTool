@@ -36,6 +36,8 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
         void onHandleTestCompletion(int position, String testUid);
 
         void onHandleTestUpdate(int position, String testUid);
+
+        void onCheckEmpty();
     }
 
     public DashboardAdapter(DashboardCallbackInterface mCallback) {
@@ -64,44 +66,41 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
 
         @Override
         public void onClick(final View v) {
-            //handle button clicks
-            if (v.getId() == R.id.delete_test_btn) {
-                new AlertDialog.Builder(v.getContext())
-                        .setTitle(R.string.action_delete_test)
-                        .setMessage(v.getContext().getResources().getString(R.string.text_delete_test, testLinkList.get(getAdapterPosition()).getTestTopic()))
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child("tests").child(testUid);
-                                mPostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.d(Utils.getTag(), "deleteTest:success");
-                                            Snackbar.make(v, R.string.test_delete_success, Snackbar.LENGTH_LONG).show();
-                                            testLinkList.remove(getAdapterPosition());
-                                            notifyItemRemoved(getAdapterPosition());
-
-                                        } else {
-                                            Log.w(Utils.getTag(),"deleteTest:failure", task.getException());
-                                            Snackbar.make(v, R.string.test_delete_failure, Snackbar.LENGTH_LONG).show();
+            if (mCallback != null) {
+                //handle button clicks
+                if (v.getId() == R.id.delete_test_btn) {
+                    new AlertDialog.Builder(v.getContext())
+                            .setTitle(R.string.action_delete_test)
+                            .setMessage(v.getContext().getResources().getString(R.string.text_delete_test, testLinkList.get(getAdapterPosition()).getTestTopic()))
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child("tests").child(testUid);
+                                    mPostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(Utils.getTag(), "deleteTest:success");
+                                                Snackbar.make(v, R.string.test_delete_success, Snackbar.LENGTH_LONG).show();
+                                                testLinkList.remove(getAdapterPosition());
+                                                notifyItemRemoved(getAdapterPosition());
+                                                mCallback.onCheckEmpty();
+                                            } else {
+                                                Log.w(Utils.getTag(), "deleteTest:failure", task.getException());
+                                                Snackbar.make(v, R.string.test_delete_failure, Snackbar.LENGTH_LONG).show();
+                                            }
                                         }
-                                    }
-                                });
-                            }
+                                    });
+                                }
 
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
+                            })
+                            .setNegativeButton(android.R.string.no, null)
+                            .show();
 
-            } else if (v.getId()== R.id.edit_test_btn) {
-                if(mCallback != null){
-                    Log.d(Utils.getTag(), "not null");
+                } else if (v.getId() == R.id.edit_test_btn) {
                     mCallback.onHandleTestUpdate(getAdapterPosition(), testUid);
-                }
 
-            } else if (v.getId() == R.id.attempt_test_btn) {
-                if(mCallback != null){
+                } else if (v.getId() == R.id.attempt_test_btn) {
                     mCallback.onHandleTestCompletion(getAdapterPosition(), testUid);
                 }
             }
@@ -132,7 +131,7 @@ public class DashboardAdapter extends AnimatedRecyclerView.Adapter<DashboardAdap
 
     public void addItem(TestLink testLink) {
         testLinkList.add(testLink);
-        notifyItemInserted(getItemCount()-1);
+        notifyItemInserted(getItemCount() - 1);
     }
 
     public void setItem(int position, TestLink testLink) {

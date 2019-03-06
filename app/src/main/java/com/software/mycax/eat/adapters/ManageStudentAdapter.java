@@ -19,6 +19,7 @@ import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.models.ManageStudent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -26,8 +27,8 @@ import mehdi.sakout.fancybuttons.FancyButton;
 public class ManageStudentAdapter extends AnimatedRecyclerView.Adapter<ManageStudentAdapter.ItemHolder> {
     private final List<ManageStudent> manageStudentList;
 
-    public ManageStudentAdapter(List<ManageStudent> manageStudentList) {
-        this.manageStudentList = manageStudentList;
+    public ManageStudentAdapter() {
+        this.manageStudentList = new ArrayList<>();
     }
 
     class ItemHolder extends AnimatedRecyclerView.ViewHolder implements View.OnClickListener {
@@ -93,6 +94,11 @@ public class ManageStudentAdapter extends AnimatedRecyclerView.Adapter<ManageStu
     @Override
     public int getItemCount() {
         return manageStudentList.size();
+    }
+
+    public void addItem(ManageStudent manageStudent) {
+        manageStudentList.add(manageStudent);
+        notifyItemInserted(getItemCount()-1);
     }
 
 }

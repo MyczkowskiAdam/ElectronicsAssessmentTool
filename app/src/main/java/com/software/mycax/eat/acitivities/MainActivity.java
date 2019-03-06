@@ -45,7 +45,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private FirebaseAuth mAuth;
-    private FirebaseUser mFirebaseUser;
     private User mUser;
     private NavigationView navigationView;
     private View hView;
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mAuth.getCurrentUser();
+        FirebaseUser mFirebaseUser = mAuth.getCurrentUser();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,13 +85,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * method is used set navigation drawer user data
      */
     private void updateDrawer() {
-        TextView textViewName = hView.findViewById(R.id.textViewName);
-        TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
-        CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
-        textViewName.setText(mFirebaseUser.getDisplayName());
-        textViewEmail.setText(mFirebaseUser.getEmail());
-        if (mFirebaseUser.getPhotoUrl() != null)
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
+        FirebaseUser mFirebaseUser = mAuth.getCurrentUser();
+        if (mFirebaseUser != null) {
+            TextView textViewName = hView.findViewById(R.id.textViewName);
+            TextView textViewEmail = hView.findViewById(R.id.textViewEmail);
+            CircleImageView iProfilePic = hView.findViewById(R.id.imageViewProfilePic);
+            textViewName.setText(mFirebaseUser.getDisplayName());
+            textViewEmail.setText(mFirebaseUser.getEmail());
+            if (mFirebaseUser.getPhotoUrl() != null)
+                Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(iProfilePic);
+            else
+                iProfilePic.setImageDrawable(getDrawable(R.drawable.ic_profile_image));
+        }
     }
 
     /**

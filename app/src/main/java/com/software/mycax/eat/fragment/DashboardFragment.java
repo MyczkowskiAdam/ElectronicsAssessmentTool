@@ -4,6 +4,7 @@ package com.software.mycax.eat.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 
 
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -42,6 +44,7 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
     private AnimatedRecyclerView recyclerView;
     private AVLoadingIndicatorView loadingIndicatorView;
     private DashboardAdapter dashboardAdapter;
+    private ImageView imageEmpty;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -58,13 +61,14 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
         mDatabase = FirebaseDatabase.getInstance().getReference();
         getActivity().setTitle(R.string.menu_dashboard);
 
+        imageEmpty = v.findViewById(R.id.imageEmpty);
         loadingIndicatorView = v.findViewById(R.id.avi);
         recyclerView = v.findViewById(R.id.rv);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom);
         recyclerView.setLayoutAnimation(animationController);
-        mFirebaseUser = mAuth.getCurrentUser();
         dashboardAdapter = new DashboardAdapter(this);
         recyclerView.setAdapter(dashboardAdapter);
+        mFirebaseUser = mAuth.getCurrentUser();
         if (mFirebaseUser != null) {
             getAccountInfo();
         }
@@ -110,6 +114,7 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                         }
                     }
                 }
+                onCheckEmpty();
                 recyclerView.scheduleLayoutAnimation();
             }
 
@@ -159,6 +164,18 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
         intent.putExtra("testUid", testUid);
         intent.putExtra("adapterPosition", position);
         getActivity().startActivityForResult(intent, Utils.EDIT_TEST_INTENT);
+    }
+
+    @Override
+    public void onCheckEmpty() {
+        if (dashboardAdapter.getItemCount() < 1) {
+            recyclerView.setVisibility(View.GONE);
+            imageEmpty.setVisibility(View.VISIBLE);
+        }
+        else {
+            recyclerView.setVisibility(View.VISIBLE);
+            imageEmpty.setVisibility(View.GONE);
+        }
     }
 
     @Override

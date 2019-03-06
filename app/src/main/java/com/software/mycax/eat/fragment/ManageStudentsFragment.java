@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -25,6 +26,7 @@ import com.software.mycax.eat.R;
 import com.software.mycax.eat.Utils;
 import com.software.mycax.eat.adapters.ManageStudentAdapter;
 import com.software.mycax.eat.models.ManageStudent;
+import com.software.mycax.eat.models.User;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
@@ -35,8 +37,11 @@ import java.util.List;
  */
 public class ManageStudentsFragment extends Fragment {
     private FirebaseUser mFirebaseUser;
+    private DatabaseReference mDatabase;
     private AnimatedRecyclerView recyclerView;
     private AVLoadingIndicatorView loadingIndicatorView;
+    private ManageStudentAdapter manageStudentAdapter;
+    private ImageView imageEmpty;
 
     public ManageStudentsFragment() {
         // Required empty public constructor
@@ -47,11 +52,15 @@ public class ManageStudentsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_manage_students, container, false);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         getActivity().setTitle(R.string.menu_manage_students);
+        imageEmpty = v.findViewById(R.id.imageEmpty);
         loadingIndicatorView = v.findViewById(R.id.avi);
         recyclerView = v.findViewById(R.id.rv);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom);
         recyclerView.setLayoutAnimation(animationController);
+        manageStudentAdapter = new ManageStudentAdapter();
+        recyclerView.setAdapter(manageStudentAdapter);
         mFirebaseUser = mAuth.getCurrentUser();
         if (mFirebaseUser != null) {
             getTeacherCode();
@@ -61,7 +70,6 @@ public class ManageStudentsFragment extends Fragment {
 
     private void getTeacherCode() {
         loadingIndicatorView.smoothToShow();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -79,22 +87,27 @@ public class ManageStudentsFragment extends Fragment {
     }
 
     private void getStudents(String teacherCode) {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         String accountKey = teacherCode + "_0";
         mDatabase.child("users").orderByChild("accountKey").equalTo(accountKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //create a list of ManageStudent items
                 Log.d(Utils.getTag(), "onDataChange: read value success");
-                List<ManageStudent> manageStudentList = new ArrayList<>();
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    String name = userSnapshot.child("name").getValue(String.class);
-                    String email = userSnapshot.child("email").getValue(String.class);
-                    Log.d(Utils.getTag(), "userSnapshot: added");
-                    manageStudentList.add(new ManageStudent(name, email));
+                    User user = userSnapshot.getValue(User.class);
+                    if (user != null) {
+                        Log.d(Utils.getTag(), "userSnapshot: added");
+                        manageStudentAdapter.addItem(new ManageStudent(user.getName(), user.getEmail()));
+                    }
                 }
-                ManageStudentAdapter manageStudentAdapter = new ManageStudentAdapter(manageStudentList);
-                recyclerView.setAdapter(manageStudentAdapter);
+                if (manageStudentAdapter.getItemCount() < 1) {
+                    recyclerView.setVisibility(View.GONE);
+                    imageEmpty.setVisibility(View.VISIBLE);
+                }
+                else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    imageEmpty.setVisibility(View.GONE);
+                }
                 recyclerView.scheduleLayoutAnimation();
             }
 

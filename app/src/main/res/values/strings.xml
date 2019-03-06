@@ -28,6 +28,7 @@
     <string name="action_edit">Edit</string>
     <string name="action_delete_test">Delete test</string>
     <string name="action_update_test">Update test</string>
+    <string name="action_remove_picture">Remove profile picture</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_empty">Fields cannot be empty!</string>
     <string name="invalid_email">Email is not valid!</string>
@@ -54,6 +55,7 @@
     <string name="text_update_test">Are you sure you want to update test?</string>
     <string name="text_finish_test">Are you sure you want to finish test?</string>
     <string name="text_update_profile">Are you sure you want to update profile?</string>
+    <string name="text_remove_picture">Are you sure you want to remove your profile picture?</string>
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_testcreator">Test creator</string>

@@ -17,6 +17,14 @@
         app:layoutManagerReverse="false"
         app:layoutManagerType="linear" />
 
+    <ImageView
+        android:id="@+id/imageEmpty"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_refresh_24dp" />
+
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/avi"
         android:layout_gravity="center"

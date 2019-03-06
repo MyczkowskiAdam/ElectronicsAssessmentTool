@@ -1,8 +1,13 @@
 package com.software.mycax.eat.models;
 
+@SuppressWarnings("unused")
 public class ManageStudent {
-    private final String studentName;
-    private final String studentEmail;
+    private String studentName;
+    private String studentEmail;
+
+    public ManageStudent() {
+        // empty constructor
+    }
 
     public ManageStudent(String studentName, String studentEmail) {
         this.studentName = studentName;
@@ -13,7 +18,15 @@ public class ManageStudent {
         return studentEmail;
     }
 
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
+    }
+
     public String getStudentName() {
         return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
 }
