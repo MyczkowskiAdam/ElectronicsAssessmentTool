@@ -117,8 +117,10 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                         }
                     }
                 }
-                recyclerView.scheduleLayoutAnimation();
-                onCheckEmpty(dashboardAdapter.getItemCount());
+                if (accountTypeBoxed == Utils.ACCOUNT_TEACHER) {
+                    onCheckEmpty(dashboardAdapter.getItemCount());
+                    recyclerView.scheduleLayoutAnimation();
+                }
             }
 
             @Override
@@ -142,6 +144,8 @@ public class DashboardFragment extends Fragment implements DashboardAdapter.Dash
                     dashboardAdapter.addItem(new TestLink(testSet.getTestUid(), testSet.getTestTopic()));
                     Log.d(Utils.getTag(), "testSnapshot: added");
                 }
+                onCheckEmpty(dashboardAdapter.getItemCount());
+                recyclerView.scheduleLayoutAnimation();
             }
 
             @Override

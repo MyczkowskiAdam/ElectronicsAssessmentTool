@@ -32,7 +32,7 @@ public class Utils {
     public static final String CHILD_REF_TESTS = "tests";
     public static final String CHILD_REF_TEST_RESULTS = "testResults";
     public static final String CHILD_REF_COMPLETED = "completed";
-    public static final String EXTRA_INT_ADAPTER_POSITION = "adapterPoition";
+    public static final String EXTRA_INT_ADAPTER_POSITION = "adapterPosition";
     public static final String EXTRA_STRING_TESTUID = "testUid";
     public static final String EXTRA_BOOLEAN_IS_COMPLETED = "isCompleted";
     public static final String EXTRA_BOOLEAN_IS_EDITED = "isEdited";
